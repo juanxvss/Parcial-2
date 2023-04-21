@@ -1,37 +1,25 @@
-
 import java.util.Scanner;
 
 public class Persona {
     private final String nombre;
     private int edad;
+    private final String DNI;
     private char sexo;
     private double peso;
     private double altura;
-    private final String DNI;
-
-    public static final char SEXO_HOMBRE = 'H';
-    public static final char SEXO_MUJER = 'M';
-
-    private final int PESO_IDEAL_BAJO = -1;
-    private final int PESO_IDEAL_NORMAL = 0;
-    private final int PESO_IDEAL_ALTO = 1;
+    private static final char SEXO_POR_DEFECTO = 'H';
+    private static final int PESO_IDEAL_BAJO = -1;
+    private static final int PESO_IDEAL_NORMAL = 0;
+    private static final int PESO_IDEAL_ALTO = 1;
 
     public Persona() {
-        this.nombre = "";
-        this.edad = 0;
-        this.sexo = SEXO_HOMBRE;
-        this.peso = 0;
-        this.altura = 0;
-        this.DNI = generaDNI();
+        this("", 0, SEXO_POR_DEFECTO, 0, 0);
+        generaDNI();
     }
 
     public Persona(String nombre, int edad, char sexo) {
-        this.nombre = nombre;
-        this.edad = edad;
-        this.sexo = comprobarSexo(sexo);
-        this.peso = 0;
-        this.altura = 0;
-        this.DNI = generaDNI();
+        this(nombre, edad, sexo, 0, 0);
+        generaDNI();
     }
 
     public Persona(String nombre, int edad, char sexo, double peso, double altura) {
@@ -40,11 +28,16 @@ public class Persona {
         this.sexo = comprobarSexo(sexo);
         this.peso = peso;
         this.altura = altura;
-        this.DNI = generaDNI();
+        this.DNI = generarDNIAleatorio();
+        this.calcularIMC();
+    }
+
+    private char comprobarSexo(char sexo) {
+        return sexo == 'H' || sexo == 'M' ? sexo : SEXO_POR_DEFECTO;
     }
 
     public int calcularIMC() {
-        double imc = peso / (altura * altura);
+        double imc = peso / Math.pow(altura, 2);
         if (imc < 20) {
             return PESO_IDEAL_BAJO;
         } else if (imc >= 20 && imc <= 25) {
@@ -58,32 +51,21 @@ public class Persona {
         return edad >= 18;
     }
 
-    private char comprobarSexo(char sexo) {
-        return sexo == SEXO_HOMBRE || sexo == SEXO_MUJER ? sexo : SEXO_HOMBRE;
-    }
-
-    private String generaDNI() {
-        final int DIVISOR_DNI = 23;
-        int numDNI = (int) (Math.random() * 100000000) + 10000000;
-        int resto = numDNI % DIVISOR_DNI;
-        String letraDNI = obtenerLetraDNI(resto);
+    private String generarDNIAleatorio() {
+        int numDNI = (int) (Math.random() * 100000000);
+        char letraDNI = obtenerLetraDNI(numDNI);
         return Integer.toString(numDNI) + letraDNI;
     }
 
-    private String obtenerLetraDNI(int resto) {
-        final String LETRAS_DNI = "TRWAGMYFPDXBNJZSQVHLCKE";
-        return LETRAS_DNI.charAt(resto) + "";
+    private char obtenerLetraDNI(int numDNI) {
+        char[] letras = "TRWAGMYFPDXBNJZSQVHLCKE".toCharArray();
+        int resto = numDNI % 23;
+        return letras[resto];
     }
 
-    @Override
     public String toString() {
-        String sexoStr = sexo == SEXO_HOMBRE ? "Hombre" : "Mujer";
-        return "Nombre: " + nombre + "\n" +
-                "Edad: " + edad + " años\n" +
-                "DNI: " + DNI + "\n" +
-                "Sexo: " + sexoStr + "\n" +
-                "Peso: " + peso + " kg\n" +
-                "Altura: " + altura + " m";
+        return "Nombre: " + nombre + "\nEdad: " + edad + "\nDNI: " + DNI + "\nSexo: " + sexo + "\nPeso: " + peso
+                + "\nAltura: " + altura + "\n";
     }
 
     public void setEdad(int edad) {
@@ -91,4 +73,27 @@ public class Persona {
     }
 
     public void setSexo(char sexo) {
-        this.se
+        this.sexo = comprobarSexo(sexo);
+    }
+
+    public void setPeso(double peso) {
+        this.peso = peso;
+    }
+
+    public void setAltura(double altura) {
+        this.altura = altura;
+    }
+}
+
+public class Ejecutable {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Introduce el nombre: ");
+        String nombre = sc.nextLine();
+
+        System.out.print("Introduce la edad: ");
+        int edad = sc.nextInt();
+
+        System.out.print("Introduce el sexo (H/M): ");
+        char sexo = sc.next().
